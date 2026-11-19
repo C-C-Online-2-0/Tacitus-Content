@@ -1,6 +1,6 @@
 # Notice
 
-This content is used and redistributed with the written permission of begosik and of RA3BattleNet. Keep the permissions on file with the C&C:Online team.
+This content is used and redistributed with the written permission of begosik and of RA3BattleNet.
 
 ## Origin
 
