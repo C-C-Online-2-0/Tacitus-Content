@@ -1,0 +1,7 @@
+# Keep map Lua sources byte-identical to their embedded payloads.
+/tools/maps/lua/*.lua text eol=lf
+
+# The engine matches these bytes exactly.
+priority/**/*.version -text
+*.map binary
+*.tga binary
