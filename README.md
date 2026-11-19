@@ -1,0 +1,63 @@
+# Tacitus Content
+
+Game content for the eight-player support in [Tacitus](https://github.com/C-C-Online-2-0/Tacitus): the eight-player lobby UI, the eight-player maps and the files that make the game pick them up.
+
+The code lives in the Tacitus repo. This repo holds the assets, their sources and the tools to build and package them, so the two can change separately.
+
+Credits and permissions are in [NOTICE.md](NOTICE.md).
+
+## What is here
+
+| Path | Contents |
+| --- | --- |
+| `Data/aptui/` | Editable sources for the seven `.8pv1` UI pages and their build entry XMLs |
+| `Additional/Data/maps/official/` | The eight-player maps (`.map`, minimap, `map.str`) |
+| `Data/additionalmaps/` | Map registration, one file per pool: `mapmetadata_tacitus.xml` (base game and Corona) and `mapmetadata_tacitus_corona.xml` (Corona only) |
+| `priority/data/aptui/` | The seven `.version` files that make the game use the `.8pv1` pages |
+| `tools/aptui/` | `build_page.py` builds one page, `check_release.py` checks sources and compiled streams |
+| `tools/maps/` | `update_crc.py` keeps map CRCs in the metadata in step with the map files |
+| `tools/package.py` | Assembles the release zip from this repo and a build directory |
+| `docs/` | The `.8pv1` UI guide, provenance and validation records, map notes |
+
+Compiled streams (`manifest`, `bin`, `imp`, `relo`) are not stored in git. They need the RA3 MOD SDK, so they are built locally and published as release assets.
+
+## Content root
+
+A release zip unpacks into the game's `Data/Tacitus` folder:
+
+```
+priority/data/aptui/<page>.version        forces the .8pv1 pages
+data/aptui/<page>.8pv1.{manifest,bin,imp,relo}
+data/maps/official/<map>/...
+Tacitus/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
+content.json                              version and a hash of every file
+```
+
+The `priority` folder is read by Tacitus itself so its `.version` files win over the stock and mod archives. Do not put UI files in it.
+
+## Building a release
+
+You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.exe`) and [AptXmlAI](https://git.ra3battle.cn/RA3CoronaDevelopers/AptXmlAI).
+
+1. Check the sources: `python tools/aptui/check_release.py inputs <entry xml files>`
+2. Build each page with `tools/aptui/build_page.py`, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md). Collect the `package/data/aptui` output of every page into one build directory.
+3. Compile every map folder and both metadata XMLs with the SDK into the same build directory, laid out as in `tools/package.py`.
+4. If you touched a `.map`, run `python tools/maps/update_crc.py --write`, then `--check`.
+5. Package: `python tools/package.py --build <build dir> --version 1.0.0`
+
+`tools/package.py` refuses to produce a zip if any stream, map file or `.version` file is missing or wrong.
+
+## Adding a map
+
+Follow the steps in the upstream notes, with Tacitus file names: put the map under `Additional/Data/maps/official/`, register it in `mapmetadata_tacitus.xml` (or the Corona file), with `NumPlayers="8"`, `IsMultiplayer="true"`, `IsOfficial="true"` and all eight start positions. Then update the CRCs.
+
+## Differences from RA3BattleNet's Content repo
+
+- Only the eight-player pages and maps were imported, with their history. The RA3BattleNet-only streams (`ra3battlenet.swf`, the splash, the connection panel and the rest) and the other map pools are not here.
+- The map registration files are renamed so they cannot clash with RA3BattleNet's.
+- `check_release.py` no longer expects the RA3BattleNet streams or the development button.
+- `tools/package.py` and the `priority` folder are new here.
+
+## Status
+
+Nothing here has been run in game yet. The Tacitus side that loads this folder (the priority file provider and the extra search path) is still to be ported.
