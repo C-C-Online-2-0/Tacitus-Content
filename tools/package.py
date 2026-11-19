@@ -125,7 +125,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--build", type=Path, required=True, help="Directory of compiled streams")
     parser.add_argument("--version", required=True, help="Release version, e.g. 1.0.0")
-    parser.add_argument("--pool", choices=("vanilla", "corona", "all"), default="all")
+    parser.add_argument("--pool", choices=("vanilla", "corona", "all"), default="vanilla",
+                        help="Map pool to package; Corona is parked and not built or tested")
     parser.add_argument("--ui-only", action="store_true", help="Package only the UI pages, for testing before the maps are built")
     parser.add_argument("--out", type=Path, default=ROOT / "dist")
     args = parser.parse_args()

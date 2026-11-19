@@ -81,6 +81,7 @@ def main():
     parser.add_argument("--aptxmlai", type=Path, required=True, help="Cloned AptXmlAI root")
     parser.add_argument("--work", type=Path, required=True, help="Work directory; keep the path short")
     parser.add_argument("--build", type=Path, required=True, help="Output directory for tools/package.py")
+    parser.add_argument("--corona", action="store_true", help="Also compile the Corona map registration (parked)")
     args = parser.parse_args()
 
     sdk = args.sdk.resolve()
@@ -109,7 +110,8 @@ def main():
     (meta_work / "out").mkdir()
     target = build / "data" / "tacitus8p"
     target.mkdir(parents=True, exist_ok=True)
-    for pool in POOLS:
+    pools = POOLS if args.corona else POOLS[:1]
+    for pool in pools:
         shutil.copyfile(ROOT / "Data/additionalmaps" / (pool + ".xml"), meta_work / "stage" / (pool + ".xml"))
         run([sdk32 / "tools/BinaryAssetBuilder.exe", meta_work / "stage" / (pool + ".xml"),
              f"/od:{meta_work / 'out'}", f"/iod:{meta_work / 'out'}",
@@ -119,7 +121,7 @@ def main():
              f"/art:{meta_work / 'stage'}", f"/audio:{meta_work / 'stage'}"], pool)
         for extension in EXTENSIONS:
             shutil.copyfile(meta_work / "out" / f"{pool}.{extension}", target / f"{pool}.{extension}")
-    print(f"Built {len(PAGES)} pages and {len(POOLS)} map registrations into {build}")
+    print(f"Built {len(PAGES)} pages and {len(pools)} map registration(s) into {build}")
     print("Map streams (data/maps/official/<map>/map.*) are still needed before a full release.")
 
 

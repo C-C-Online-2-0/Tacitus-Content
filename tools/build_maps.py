@@ -21,9 +21,9 @@ from build_content import EXTENSIONS, ROOT, fail, make_x86_sdk, run  # noqa: E40
 from package import POOLS, pool_maps  # noqa: E402
 
 
-def expected_maps():
+def expected_maps(corona):
     names = []
-    for pool in POOLS:
+    for pool in (POOLS if corona else ("vanilla",)):
         for name in pool_maps(pool):
             if name not in names:
                 names.append(name)
@@ -68,6 +68,7 @@ def main():
     parser.add_argument("--maps", type=Path, default=ROOT / "Additional/Data/maps/official",
                         help="Folder of map folders, each holding map.xml")
     parser.add_argument("--only", action="append", default=[], help="Build just this map (repeatable)")
+    parser.add_argument("--corona", action="store_true", help="Also build the Corona-only maps (parked)")
     args = parser.parse_args()
 
     sdk = args.sdk.resolve()
@@ -76,7 +77,7 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     make_x86_sdk(sdk, sdk32)
 
-    names = args.only or expected_maps()
+    names = args.only or expected_maps(args.corona)
     missing = [n for n in names if not (args.maps / n / "map.xml").is_file()]
     if missing:
         fail("no map.xml for: " + ", ".join(missing))
