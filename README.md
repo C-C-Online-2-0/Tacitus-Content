@@ -18,7 +18,7 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | `priority` version files | Done |
 | Release packager | Done, tested only on synthetic input |
 | **Compiled streams** (`manifest`, `bin`, `imp`, `relo`) | **Not built.** They need the RA3 MOD SDK and AptXmlAI, so there is no release zip yet |
-| Tacitus support for loading this content | In development in Tacitus, not released |
+| Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
 | Licence | Not chosen yet |
 
@@ -48,7 +48,7 @@ Corona only: 22442 (8p and RandomTeams), Winter Showdown RandomTeams, Magmagma R
 
 ## Content root
 
-A release zip unpacks into the game's `Data/Tacitus` folder:
+A release zip unpacks into the `Tacitus` folder inside the game's `Data` folder (the one that holds `Tacitus.ini`):
 
 ```
 priority/data/aptui/<page>.version        forces the .8pv1 pages
