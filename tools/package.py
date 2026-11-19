@@ -126,11 +126,12 @@ def main():
     parser.add_argument("--build", type=Path, required=True, help="Directory of compiled streams")
     parser.add_argument("--version", required=True, help="Release version, e.g. 1.0.0")
     parser.add_argument("--pool", choices=("vanilla", "corona", "all"), default="all")
+    parser.add_argument("--ui-only", action="store_true", help="Package only the UI pages, for testing before the maps are built")
     parser.add_argument("--out", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
     if not re.fullmatch(r"\d+\.\d+\.\d+", args.version):
         fail("version must look like 1.0.0")
-    pools = list(POOLS) if args.pool == "all" else [args.pool]
+    pools = [] if args.ui_only else list(POOLS) if args.pool == "all" else [args.pool]
     if not args.build.is_dir():
         fail(f"build directory not found: {args.build}")
 
@@ -142,12 +143,12 @@ def main():
     manifest(staging, args.version, pools, maps)
 
     args.out.mkdir(parents=True, exist_ok=True)
-    archive = args.out / f"tacitus-content-{args.version}.zip"
+    archive = args.out / f"tacitus-content-{args.version}{'-ui-only' if args.ui_only else ''}.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zipped:
         for path in sorted(p for p in staging.rglob("*") if p.is_file()):
             zipped.write(path, path.relative_to(staging).as_posix())
     shutil.rmtree(staging)
-    print(f"Wrote {archive} ({len(maps)} maps, pools: {', '.join(pools)})")
+    print(f"Wrote {archive} ({len(maps)} maps, pools: {', '.join(pools) or 'none'})")
 
 
 if __name__ == "__main__":
