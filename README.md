@@ -18,7 +18,7 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | `priority` version files | Done |
 | UI page streams (`manifest`, `bin`, `imp`, `relo`) | Build with `tools/build_content.py`; the offline checks pass. Not tested in game |
 | Map registration streams | Build with `tools/build_content.py`. Not tested in game |
-| **Map streams** (`map.manifest` and friends) | **Not built.** Each map needs a `map.xml` exported by World Builder, which upstream does not publish |
+| **Map streams** (`map.manifest` and friends) | **Not built.** Each map needs a `map.xml` exported by World Builder, which upstream does not publish. `tools/build_maps.py` is ready and tested on a stand-in export |
 | Release packager | Works, including a `--ui-only` mode for testing without the maps |
 | Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
@@ -37,6 +37,7 @@ A full release is blocked on the map streams. The UI and the registrations can a
 | `tools/aptui/` | `build_page.py` builds one page, `check_release.py` checks sources and compiled streams |
 | `tools/maps/` | `update_crc.py` keeps map CRCs in the metadata in step with the map files |
 | `tools/build_content.py` | Compiles the UI pages and map registrations into a build directory |
+| `tools/build_maps.py` | Compiles the World Builder `map.xml` exports into map streams |
 | `tools/package.py` | Assembles the release zip from this repo and a build directory |
 | `docs/` | The `.8pv1` UI guide, provenance and validation records, map notes |
 
@@ -70,9 +71,14 @@ You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.
 1. Build the pages and map registrations:
    `python tools/build_content.py --sdk "<RA3 MOD SDK>" --aptxmlai <AptXmlAI clone> --work <short work dir> --build <build dir>`
    Keep the work path short. `BinaryAssetBuilder.exe` crashes on 64-bit Windows because it loads a 32-bit texture compiler, so the script builds a 32-bit copy of the SDK tools in the work directory and leaves your SDK untouched.
-2. Map streams: export a `map.xml` for each map from World Builder, then compile it with `BinaryAssetBuilder.exe` into `<build dir>/data/maps/official/<map>/map.*`. This step is not scripted yet.
-3. If you touched a `.map`, run `python tools/maps/update_crc.py --write`, then `--check`.
-4. Package: `python tools/package.py --build <build dir> --version 1.0.0`, or add `--ui-only` while the map streams are missing.
+2. Map streams. Each map needs a `map.xml` that World Builder writes:
+   1. Open the map in World Builder straight from its folder under `Additional/Data/maps/official/`.
+   2. Make a trivial change, for example add a script and delete it again. World Builder does not save a map you have not changed.
+   3. Save. `map.xml` appears next to the `.map`, and the `.map` itself is rewritten.
+   4. Once all the maps are done, run `python tools/maps/update_crc.py --write`, then `--check`, because the `.map` files changed.
+   5. Run `python tools/build_maps.py --sdk "<RA3 MOD SDK>" --work <short work dir> --build <build dir>`. It compiles every `map.xml` into `<build dir>/data/maps/official/<map>/map.*`.
+   6. Run step 1 again so the registrations pick up the new CRCs.
+3. Package: `python tools/package.py --build <build dir> --version 1.0.0`, or add `--ui-only` while the map streams are missing.
 
 To work on a single page, use `tools/aptui/build_page.py` directly, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md).
 
