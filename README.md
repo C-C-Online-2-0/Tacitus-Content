@@ -16,13 +16,15 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | Eight-player maps (10) | Imported, CRCs verified |
 | Map registration (2 pools) | Done, validated with the CRC tool |
 | `priority` version files | Done |
-| Release packager | Done, tested only on synthetic input |
-| **Compiled streams** (`manifest`, `bin`, `imp`, `relo`) | **Not built.** They need the RA3 MOD SDK and AptXmlAI, so there is no release zip yet |
+| UI page streams (`manifest`, `bin`, `imp`, `relo`) | Build with `tools/build_content.py`; the offline checks pass. Not tested in game |
+| Map registration streams | Build with `tools/build_content.py`. Not tested in game |
+| **Map streams** (`map.manifest` and friends) | **Not built.** Each map needs a `map.xml` exported by World Builder, which upstream does not publish |
+| Release packager | Works, including a `--ui-only` mode for testing without the maps |
 | Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
 | Licence | Not chosen yet |
 
-Until the streams are built and Tacitus can load them, installing this repo does nothing.
+A full release is blocked on the map streams. The UI and the registrations can already be built and packaged with `--ui-only`, which is enough to try the lobby screens but not to play an eight-player map.
 
 ## What is here
 
@@ -34,6 +36,7 @@ Until the streams are built and Tacitus can load them, installing this repo does
 | `priority/data/aptui/` | The seven `.version` files that make the game use the `.8pv1` pages |
 | `tools/aptui/` | `build_page.py` builds one page, `check_release.py` checks sources and compiled streams |
 | `tools/maps/` | `update_crc.py` keeps map CRCs in the metadata in step with the map files |
+| `tools/build_content.py` | Compiles the UI pages and map registrations into a build directory |
 | `tools/package.py` | Assembles the release zip from this repo and a build directory |
 | `docs/` | The `.8pv1` UI guide, provenance and validation records, map notes |
 
@@ -64,11 +67,14 @@ The game resolves `data/...` paths against every search folder, so this folder w
 
 You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.exe`) and [AptXmlAI](https://git.ra3battle.cn/RA3CoronaDevelopers/AptXmlAI).
 
-1. Check the sources: `python tools/aptui/check_release.py inputs <entry xml files>`
-2. Build each page with `tools/aptui/build_page.py`, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md). Collect the `package/data/aptui` output of every page into one build directory.
-3. Compile every map folder and both metadata XMLs with the SDK into the same build directory, laid out as described at the top of `tools/package.py`.
-4. If you touched a `.map`, run `python tools/maps/update_crc.py --write`, then `--check`.
-5. Package: `python tools/package.py --build <build dir> --version 1.0.0`
+1. Build the pages and map registrations:
+   `python tools/build_content.py --sdk "<RA3 MOD SDK>" --aptxmlai <AptXmlAI clone> --work <short work dir> --build <build dir>`
+   Keep the work path short. `BinaryAssetBuilder.exe` crashes on 64-bit Windows because it loads a 32-bit texture compiler, so the script builds a 32-bit copy of the SDK tools in the work directory and leaves your SDK untouched.
+2. Map streams: export a `map.xml` for each map from World Builder, then compile it with `BinaryAssetBuilder.exe` into `<build dir>/data/maps/official/<map>/map.*`. This step is not scripted yet.
+3. If you touched a `.map`, run `python tools/maps/update_crc.py --write`, then `--check`.
+4. Package: `python tools/package.py --build <build dir> --version 1.0.0`, or add `--ui-only` while the map streams are missing.
+
+To work on a single page, use `tools/aptui/build_page.py` directly, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md).
 
 `tools/package.py` refuses to produce a zip if any stream, map file or `.version` file is missing or wrong.
 
