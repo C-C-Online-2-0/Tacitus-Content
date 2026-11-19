@@ -5,8 +5,9 @@ Builder wrote next to the .map file (open the map, make a trivial change such as
 adding then deleting a script, and save). This turns every map.xml into
 map.manifest, map.bin, map.imp and map.relo in the build directory.
 
-Re-saving rewrites the .map, so run tools/maps/update_crc.py --write afterwards
-and rebuild the registrations with tools/build_content.py.
+Re-saving also rewrites the .map. Restore it afterwards with git checkout: the
+streams only need map.xml, and the maps then stay byte-identical to the originals
+so their registered CRCs remain valid.
 """
 
 import argparse
@@ -27,6 +28,27 @@ def expected_maps():
             if name not in names:
                 names.append(name)
     return names
+
+
+_SCRIPT_LIST = re.compile(r'[ \t]*<GameScriptList\s+id="[^"]*">.*?</GameScriptList>\s*?\n?', re.S)
+
+
+def drop_duplicate_script_lists(text):
+    """World Builder sometimes writes the same empty script list twice, which
+    BinaryAssetBuilder rejects as a duplicate instance. Only exact repeats go."""
+    seen = set()
+    removed = []
+
+    def keep(match):
+        block = match.group(0)
+        if block in seen:
+            removed.append(re.search(r'id="([^"]*)"', block).group(1))
+            return ""
+        seen.add(block)
+        return block
+
+    result = _SCRIPT_LIST.sub(keep, text)
+    return result, removed
 
 
 def check_export(name, export):
@@ -68,7 +90,10 @@ def main():
             shutil.rmtree(stage.parent)
         stage.mkdir(parents=True)
         out.mkdir()
-        shutil.copyfile(export, stage / "map.xml")
+        text, removed = drop_duplicate_script_lists(export.read_text(encoding="utf-8"))
+        (stage / "map.xml").write_text(text, encoding="utf-8", newline="")
+        if removed:
+            print(f"{name}: dropped duplicate script lists {', '.join(removed)}")
         run([sdk32 / "tools/BinaryAssetBuilder.exe", stage / "map.xml",
              f"/od:{out}", f"/iod:{out}",
              "/csc:false", "/ls:true", "/osh:false", "/pc:true", "/res:true", "/slowclean:true", "/ss:true",

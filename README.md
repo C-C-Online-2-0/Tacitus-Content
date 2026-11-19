@@ -18,7 +18,7 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | `priority` version files | Done |
 | UI page streams (`manifest`, `bin`, `imp`, `relo`) | Build with `tools/build_content.py`; the offline checks pass. Not tested in game |
 | Map registration streams | Build with `tools/build_content.py`. Not tested in game |
-| **Map streams** (`map.manifest` and friends) | **Not built.** Each map needs a `map.xml` exported by World Builder, which upstream does not publish. `tools/build_maps.py` is ready and tested on a stand-in export |
+| **Map streams** (`map.manifest` and friends) | **4 of 10 exported and compiled** (Battlebase Sigma, Fallout Fortress, Island Adventure, Joint Operations). The other six (both Winter Showdown, both Magmagma and both 22442 maps) do not load in World Builder yet. Streams not yet packaged |
 | Release packager | Works, including a `--ui-only` mode for testing without the maps |
 | Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
@@ -73,12 +73,13 @@ You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.
    Keep the work path short. `BinaryAssetBuilder.exe` crashes on 64-bit Windows because it loads a 32-bit texture compiler, so the script builds a 32-bit copy of the SDK tools in the work directory and leaves your SDK untouched.
 2. Map streams. Each map needs a `map.xml` that World Builder writes:
    1. Open the map in World Builder straight from its folder under `Additional/Data/maps/official/`.
-   2. Make a trivial change, for example add a script and delete it again. World Builder does not save a map you have not changed.
-   3. Save. `map.xml` appears next to the `.map`, and the `.map` itself is rewritten.
-   4. Once all the maps are done, run `python tools/maps/update_crc.py --write`, then `--check`, because the `.map` files changed.
-   5. Run `python tools/build_maps.py --sdk "<RA3 MOD SDK>" --work <short work dir> --build <build dir>`. It compiles every `map.xml` into `<build dir>/data/maps/official/<map>/map.*`.
-   6. Run step 1 again so the registrations pick up the new CRCs.
-3. Package: `python tools/package.py --build <build dir> --version 1.0.0`, or add `--ui-only` while the map streams are missing.
+   2. Wait for it to finish loading, then save with Ctrl+S. No edit is needed: `map.xml` appears next to the `.map`, and the `.map` itself is rewritten.
+   3. Opening is slow for big maps. Wait until the title bar and the status bar both show the new map.
+   4. Check the object count in World Builder's status bar before saving. `Objs: 0` means the map did not load, and saving it writes an empty export and damages the `.map`. If that happens, `git checkout` the map.
+   5. When you are done, restore the rewritten `.map` files with `git checkout -- Additional/Data/maps`. The `map.xml` files are ignored by git and kept locally.
+   6. Run `python tools/build_maps.py --sdk "<RA3 MOD SDK>" --work <short work dir> --build <build dir>`. It compiles every `map.xml` into `<build dir>/data/maps/official/<map>/map.*`.
+3. If you do change a `.map` for real, run `python tools/maps/update_crc.py --write`, then `--check`, and rebuild the registrations with step 1.
+4. Package: `python tools/package.py --build <build dir> --version 1.0.0`, or add `--ui-only` while the map streams are missing.
 
 To work on a single page, use `tools/aptui/build_page.py` directly, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md).
 
