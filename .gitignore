@@ -234,3 +234,9 @@ staging/
 *.8pv1.bin
 *.8pv1.imp
 *.8pv1.relo
+
+# World Builder exports, only needed to build the map streams
+Additional/Data/maps/official/*/map.xml
+Additional/Data/maps/official/*/overrides.xml
+Additional/Data/maps/official/*/*.tga
+!Additional/Data/maps/official/*/*_art.tga
