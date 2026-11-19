@@ -54,11 +54,11 @@ A release zip unpacks into the game's `Data/Tacitus` folder:
 priority/data/aptui/<page>.version        forces the .8pv1 pages
 data/aptui/<page>.8pv1.{manifest,bin,imp,relo}
 data/maps/official/<map>/...
-Tacitus/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
+data/tacitus8p/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
 content.json                              version and a hash of every file
 ```
 
-Tacitus reads the `priority` folder itself so its `.version` files win over the stock and mod archives. Do not put UI files in it.
+The game resolves `data/...` paths against every search folder, so this folder works as one. Tacitus reads the `priority` folder itself so its `.version` files win over the stock and mod archives. Do not put UI files in it.
 
 ## Building a release
 

@@ -6,7 +6,7 @@ that need the RA3 MOD SDK (manifest, bin, imp, relo). Nothing is compiled here.
 Expected build directory:
     data/aptui/<page>.8pv1.{manifest,bin,imp,relo}        build_page.py package output
     data/maps/official/<map>/map.{manifest,bin,imp,relo}  BinaryAssetBuilder output
-    Tacitus/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
+    data/tacitus8p/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
 
 The zip root is the Tacitus content root, to be unpacked into the game's
 Data/Tacitus folder.
@@ -88,12 +88,12 @@ def stage(build, staging, pools):
         for name in pool_maps(pool):
             if name not in maps:
                 maps.append(name)
-        require_streams(build / "Tacitus", POOLS[pool], "map metadata")
+        require_streams(build / "data/tacitus8p", POOLS[pool], "map metadata")
         for extension in STREAM_EXTENSIONS:
             name = f"{POOLS[pool]}.{extension}"
-            target = staging / "Tacitus" / name
+            target = staging / "data/tacitus8p" / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(build / "Tacitus" / name, target)
+            shutil.copyfile(build / "data/tacitus8p" / name, target)
 
     for name in maps:
         source = ROOT / "Additional/Data/maps/official" / name

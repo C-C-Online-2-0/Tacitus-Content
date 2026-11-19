@@ -7,7 +7,7 @@
         <Include type="reference" source="DATA:global.xml" />
         <Include type="reference" source="DATA:audio.xml" />
     </Includes>
-    <MapMetaData id="TacitusEightPlayerMapCache">
+    <MapMetaData id="TacitusEightPlayerCoronaMapCache">
         <MapMetaData
             BorderSize="30"
             CRC="2757945664"
