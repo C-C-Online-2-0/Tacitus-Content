@@ -1,5 +1,13 @@
 # Tacitus Content
 
+> # ⚠️ NONE OF THIS DOES ANYTHING YET
+>
+> **Do not install this. It will not give you eight player games.**
+>
+> This repo is work in progress source material. There is no release, nothing here has been run in game, and the compiled files the game needs have not been built or packaged. The Tacitus code that would load this content is also unreleased and off by default.
+>
+> See [Current state](#current-state) for exactly what exists and what is missing.
+
 Game content for the eight-player support in [Tacitus](https://github.com/C-C-Online-2-0/Tacitus): the eight-player lobby UI, the eight-player maps, and the small files that make Red Alert 3 pick them up.
 
 Tacitus holds the code. This repo holds the assets, their sources and the tools to build and package them, so the two can change on their own schedules.
@@ -18,10 +26,11 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | `priority` version files | Done |
 | UI page streams (`manifest`, `bin`, `imp`, `relo`) | Build with `tools/build_content.py`; the offline checks pass. Not tested in game |
 | Map registration streams | Build with `tools/build_content.py`. Not tested in game |
-| **Map streams** (`map.manifest` and friends) | **4 of 10 exported and compiled** (Battlebase Sigma, Fallout Fortress, Island Adventure, Joint Operations). The other six (both Winter Showdown, both Magmagma and both 22442 maps) do not load in World Builder yet. Streams not yet packaged |
+| **Map streams** (`map.manifest` and friends) | **4 of the 6 base game maps exported and compiled** (Battlebase Sigma, Fallout Fortress, Island Adventure, Joint Operations). Winter Showdown and Magmagma do not load in World Builder yet. The four Corona-only maps are parked. Streams not yet packaged |
 | Release packager | Works, including a `--ui-only` mode for testing without the maps |
 | Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
+| Corona | **Parked.** The Corona-only maps and map registration stay in the repo but are not built, packaged or supported for now |
 | Licence | Not chosen yet |
 
 A full release is blocked on the map streams. The UI and the registrations can already be built and packaged with `--ui-only`, which is enough to try the lobby screens but not to play an eight-player map.
