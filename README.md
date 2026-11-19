@@ -1,10 +1,28 @@
 # Tacitus Content
 
-Game content for the eight-player support in [Tacitus](https://github.com/C-C-Online-2-0/Tacitus): the eight-player lobby UI, the eight-player maps and the files that make the game pick them up.
+Game content for the eight-player support in [Tacitus](https://github.com/C-C-Online-2-0/Tacitus): the eight-player lobby UI, the eight-player maps, and the small files that make Red Alert 3 pick them up.
 
-The code lives in the Tacitus repo. This repo holds the assets, their sources and the tools to build and package them, so the two can change separately.
+Tacitus holds the code. This repo holds the assets, their sources and the tools to build and package them, so the two can change on their own schedules.
 
 Credits and permissions are in [NOTICE.md](NOTICE.md).
+
+## Current state
+
+This repo is a source repo. It is **not a ready-to-install package yet**, and none of it has been tested in game.
+
+| | State |
+| --- | --- |
+| UI page sources (7 `.8pv1` pages) | Imported from RA3BattleNet, unchanged |
+| Eight-player maps (10) | Imported, CRCs verified |
+| Map registration (2 pools) | Done, validated with the CRC tool |
+| `priority` version files | Done |
+| Release packager | Done, tested only on synthetic input |
+| **Compiled streams** (`manifest`, `bin`, `imp`, `relo`) | **Not built.** They need the RA3 MOD SDK and AptXmlAI, so there is no release zip yet |
+| Tacitus support for loading this content | In development in Tacitus, not released |
+| In-game testing | Not done |
+| Licence | Not chosen yet |
+
+Until the streams are built and Tacitus can load them, installing this repo does nothing.
 
 ## What is here
 
@@ -19,7 +37,14 @@ Credits and permissions are in [NOTICE.md](NOTICE.md).
 | `tools/package.py` | Assembles the release zip from this repo and a build directory |
 | `docs/` | The `.8pv1` UI guide, provenance and validation records, map notes |
 
-Compiled streams (`manifest`, `bin`, `imp`, `relo`) are not stored in git. They need the RA3 MOD SDK, so they are built locally and published as release assets.
+### Pages
+
+`fe_m_assetsGameSetup`, `fem_m_gameSetup`, `fes_m_skirmishGameSetup`, `feg_m_disconnect`, `fem_m_load`, `fem_m_postgameRoundup` and `igm_pauseMenu`.
+
+### Maps
+
+Base game and Corona: Battlebase Sigma, Fallout Fortress, Island Adventure, Joint Operations, Winter Showdown, Magmagma.
+Corona only: 22442 (8p and RandomTeams), Winter Showdown RandomTeams, Magmagma RandomTeams.
 
 ## Content root
 
@@ -33,7 +58,7 @@ Tacitus/mapmetadata_tacitus[_corona].{manifest,bin,imp,relo}
 content.json                              version and a hash of every file
 ```
 
-The `priority` folder is read by Tacitus itself so its `.version` files win over the stock and mod archives. Do not put UI files in it.
+Tacitus reads the `priority` folder itself so its `.version` files win over the stock and mod archives. Do not put UI files in it.
 
 ## Building a release
 
@@ -41,7 +66,7 @@ You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.
 
 1. Check the sources: `python tools/aptui/check_release.py inputs <entry xml files>`
 2. Build each page with `tools/aptui/build_page.py`, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md). Collect the `package/data/aptui` output of every page into one build directory.
-3. Compile every map folder and both metadata XMLs with the SDK into the same build directory, laid out as in `tools/package.py`.
+3. Compile every map folder and both metadata XMLs with the SDK into the same build directory, laid out as described at the top of `tools/package.py`.
 4. If you touched a `.map`, run `python tools/maps/update_crc.py --write`, then `--check`.
 5. Package: `python tools/package.py --build <build dir> --version 1.0.0`
 
@@ -49,7 +74,7 @@ You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.
 
 ## Adding a map
 
-Follow the steps in the upstream notes, with Tacitus file names: put the map under `Additional/Data/maps/official/`, register it in `mapmetadata_tacitus.xml` (or the Corona file), with `NumPlayers="8"`, `IsMultiplayer="true"`, `IsOfficial="true"` and all eight start positions. Then update the CRCs.
+Put the map under `Additional/Data/maps/official/` and register it in `mapmetadata_tacitus.xml` (or the Corona file) with `NumPlayers="8"`, `IsMultiplayer="true"`, `IsOfficial="true"` and all eight start positions. Then update the CRCs. The guide in `docs/` covers the details; it was written for RA3BattleNet, so read its file names as the Tacitus ones.
 
 ## Differences from RA3BattleNet's Content repo
 
@@ -58,6 +83,6 @@ Follow the steps in the upstream notes, with Tacitus file names: put the map und
 - `check_release.py` no longer expects the RA3BattleNet streams or the development button.
 - `tools/package.py` and the `priority` folder are new here.
 
-## Status
+## Licence
 
-Nothing here has been run in game yet. The Tacitus side that loads this folder (the priority file provider and the extra search path) is still to be ported.
+No licence has been chosen yet. The content is used with the written permission of begosik and RA3BattleNet, described in [NOTICE.md](NOTICE.md). Ask before reusing it elsewhere.

@@ -1,8 +1,5 @@
 # ============================================================
-# Master .gitignore template
-# Source of truth: ~/.claude/gitignore-template
-# Copy to a repo as .gitignore, then trim/extend per project.
-# Never remove the AI / secrets sections.
+# Tacitus Content .gitignore
 # ============================================================
 
 # --- Secrets & environment (NEVER commit) ---
