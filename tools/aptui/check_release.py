@@ -8,13 +8,6 @@ import xml.etree.ElementTree as ET
 
 STREAM_EXTENSIONS = ("manifest", "bin", "imp", "relo")
 APT_TYPE = 0x6C41E6DC  # AptAptData in a linked RA3 v6 manifest.
-NATIVE_STREAMS = (
-    "ra3battlenet",
-    "ra3battlenet_automatchhelper",
-    "ra3battlenet_connectioninformation",
-    "ra3battlenet_splash",
-    "ra3battlenet_virtuallist",
-)
 EIGHT_PLAYER_STREAMS = (
     "fe_m_assetsgamesetup",
     "feg_m_disconnect",
@@ -74,7 +67,6 @@ def main():
     commands.add_parser("inputs").add_argument("declarations", type=Path, nargs="+")
     package = commands.add_parser("package")
     package.add_argument("root", type=Path)
-    package.add_argument("--development-button", action="store_true")
     args = parser.parse_args()
     try:
         if args.command == "inputs":
@@ -82,10 +74,7 @@ def main():
                 check_inputs(declaration)
         else:
             aptui = args.root / "data" / "aptui"
-            streams = NATIVE_STREAMS + tuple(name + ".8pv1" for name in EIGHT_PLAYER_STREAMS)
-            if args.development_button:
-                streams += ("v4dev_mode_switch",)
-                (aptui / "v4dev_mode_switch.version").read_bytes()
+            streams = tuple(name + ".8pv1" for name in EIGHT_PLAYER_STREAMS)
             for name in streams:
                 check_stream(aptui / (name + ".manifest"))
             print(f"Checked {len(streams)} linked APT streams in {aptui}")
