@@ -28,6 +28,7 @@ This repo is a source repo. It is **not a ready-to-install package yet**, and no
 | Map registration streams | Build with `tools/build_content.py`. Not tested in game |
 | **Map streams** (`map.manifest` and friends) | **4 of the 6 base game maps exported and compiled** (Battlebase Sigma, Fallout Fortress, Island Adventure, Joint Operations). Winter Showdown and Magmagma do not load in World Builder yet. The four Corona-only maps are parked. Streams not yet packaged |
 | Release packager | Works, including a `--ui-only` mode for testing without the maps |
+| Drop-in maps zip | Works (`tools/package_maps.py`), all six base game maps, not tested in game |
 | Tacitus support for loading this content | Written (priority provider, content folder, map registrations) and builds, but untested and not released |
 | In-game testing | Not done |
 | Corona | **Parked.** The Corona-only maps and map registration stay in the repo but are not built, packaged or supported for now |
@@ -47,6 +48,7 @@ A full release is blocked on the map streams. The UI and the registrations can a
 | `tools/maps/` | `update_crc.py` keeps map CRCs in the metadata in step with the map files |
 | `tools/build_content.py` | Compiles the UI pages and map registrations into a build directory |
 | `tools/build_maps.py` | Compiles the World Builder `map.xml` exports into map streams |
+| `tools/package_maps.py` | Zips the eight-player maps as drop-in custom maps for `%APPDATA%\Red Alert 3\Maps` |
 | `tools/package.py` | Assembles the release zip from this repo and a build directory |
 | `docs/` | The `.8pv1` UI guide, provenance and validation records, map notes |
 
@@ -93,6 +95,10 @@ You need Windows, Python 3.9 or later, the RA3 MOD SDK (for `BinaryAssetBuilder.
 To work on a single page, use `tools/aptui/build_page.py` directly, as described in [docs/aptui/8pv1-guide.en.md](docs/aptui/8pv1-guide.en.md).
 
 `tools/package.py` refuses to produce a zip if any stream, map file or `.version` file is missing or wrong.
+
+## Playing the maps without a release
+
+Custom maps do not need compiled streams or registration. A folder with the `.map`, its `_art.tga` and `map.str` is enough. `python tools/package_maps.py --version 0.1.0` zips the six base game maps so players can unpack them into `%APPDATA%\Red Alert 3\Maps`. Online rooms transfer a custom map from the host, so the download is a convenience. This is the quickest way to test the lobby, since it does not depend on the map streams.
 
 ## Adding a map
 
